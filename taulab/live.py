@@ -2,6 +2,7 @@
 
 import json
 import os
+import time
 import urllib.error
 import urllib.request
 from .benchmark import POLICY
@@ -11,6 +12,7 @@ def live_agent(request, call, ask, telemetry=None):
     if telemetry is None:
         telemetry = {}
     telemetry["usage"] = []
+    telemetry["request_seconds"] = []
     key = os.environ.get("TAULAB_API_KEY")
     model = os.environ.get("TAULAB_MODEL")
     base = os.environ.get("TAULAB_BASE_URL", "https://api.openai.com/v1").rstrip("/")
@@ -78,6 +80,7 @@ def live_agent(request, call, ask, telemetry=None):
                 "Content-Type": "application/json",
             },
         )
+        started = time.perf_counter()
         try:
             with urllib.request.urlopen(req, timeout=45) as response:
                 data = json.load(response)
@@ -87,6 +90,8 @@ def live_agent(request, call, ask, telemetry=None):
             ) from None
         except urllib.error.URLError:
             raise RuntimeError("Model endpoint could not be reached") from None
+        finally:
+            telemetry["request_seconds"].append(time.perf_counter() - started)
         telemetry["usage"].append(data.get("usage"))
         telemetry["requests_completed"] = turn + 1
         message = data["choices"][0]["message"]

@@ -77,6 +77,14 @@ This runs 128 episodes by default, each with at most 12 model requests and 512 r
 
 For the original retail benchmark and a proper held-out model comparison, follow [the experiment protocol](docs/EXPERIMENTS.md).
 
+### Generate a measurement report
+
+```sh
+python3 scripts/report_experiment.py results/latest.json --output docs/MEASUREMENT-REPORT.md
+```
+
+The report links results to an artifact hash, reports execution errors, and distinguishes missing measurements from zero. Newly collected live runs record endpoint-request wall time and provider token usage when supplied. Run the same command on `results/live-experiment.json` after a configured live experiment. Request latency is not full workflow latency; dollar cost requires reconciliation with provider billing. The bundled [measurement report](docs/MEASUREMENT-REPORT.md) covers scripted fixtures only.
+
 ## Release verification
 
 The 27-test suite and seeded-result consistency checks were run locally before publication. GitHub Actions templates are provided in `.github/workflow-templates/`; they are not active workflows. Activating them requires workflow permission and moving the files to `.github/workflows/`. The current public demo is published from the `gh-pages` branch.

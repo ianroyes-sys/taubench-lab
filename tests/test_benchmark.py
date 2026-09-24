@@ -209,6 +209,8 @@ class IsolationTests(unittest.TestCase):
         self.assertEqual(payload["max_tokens"], 512)
         self.assertEqual(telemetry["usage"], [response["usage"]])
         self.assertEqual(telemetry["model"], "test-model")
+        self.assertEqual(len(telemetry["request_seconds"]), 1)
+        self.assertGreaterEqual(telemetry["request_seconds"][0], 0)
         self.assertNotIn("test-secret", json.dumps(telemetry))
 
     def test_live_adapter_requires_credentials(self):
