@@ -8,6 +8,8 @@ A research portfolio project based on [τ-bench](https://arxiv.org/abs/2406.1204
 
 **Finding:** the authentication-only scripted agent reached the correct final state in 100% of its trials, but achieved joint state-and-policy success in only 43.75%. Tool safeguards prevented invalid changes while trace checks exposed the attempted violations. This is a result on synthetic development fixtures, not a claim about deployed LLMs.
 
+[![Interactive research dashboard](docs/images/dashboard.png)](https://ianroyes-sys.github.io/taubench-lab/)
+
 Three distinct deliverables:
 
 1. **Archived research analysis:** independently recalculate pass^k from 1,980 episodes published by the original authors, with pinned source hashes. These are their model runs, not newly generated results.
