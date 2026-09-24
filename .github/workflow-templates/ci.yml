@@ -1,0 +1,56 @@
+name: CI
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test benchmark, archive analysis, and local server
+        run: python -m unittest discover -s tests -v
+      - name: Check dashboard JavaScript
+        run: node --check web/app.js
+      - name: Verify deterministic reference experiment
+        run: |
+          python -m taulab run --seed 42 --trials 8 --output /tmp/taulab-ci.json
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+          actual = json.loads(Path('/tmp/taulab-ci.json').read_text())
+          saved = json.loads(Path('results/latest.json').read_text())
+          assert actual['mode'] == 'scripted'
+          assert actual['task_count'] == 16
+          assert actual['trials_per_task'] == 8
+          assert len(actual['episodes']) == 384
+          assert len(actual['agents']) == 3
+          assert set(Counter(e['agent_id'] for e in actual['episodes']).values()) == {128}
+          assert actual['episodes'] == saved['episodes'], 'Saved episodes differ from the seeded experiment'
+          assert actual['agents'] == saved['agents'], 'Saved metrics differ from the seeded experiment'
+          print('Verified 384 deterministic episodes and saved agent metrics.')
+          PY
+      - name: Build portable public snapshot
+        run: python scripts/build_demo.py
+      - name: Verify exported snapshot
+        run: |
+          node --check dist/app.js
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          html = Path('dist/index.html').read_text()
+          assert 'data-mode="snapshot"' in html
+          assert 'id="run"' not in html
+          assert 'href="/' not in html and 'src="/' not in html
+          for name in ('latest.json', 'upstream_reanalysis.json'):
+              assert json.loads(Path('dist/data', name).read_text()) == json.loads(Path('results', name).read_text())
+          PY

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en" data-mode="local">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#14283f" />
+    <title>TauBenchLab · Agent reliability</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="./" aria-label="TauBenchLab home"
+        ><span class="logo">τ</span> TauBench<span>Lab</span></a
+      >
+      <div class="header-right">
+        <span class="lab-label">RESEARCH WORKSPACE</span
+        ><a
+          href="https://arxiv.org/abs/2406.12045"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Read the paper ↗</a
+        >
+      </div>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">AGENT EVALUATION / SAAS SUPPORT</p>
+          <h1>A correct answer.<br /><span>Every time?</span></h1>
+          <p class="intro-copy">
+            Explore how reliably support agents complete a task, change the
+            right records, and follow company policy across repeated trials.
+          </p>
+        </div>
+        <aside class="scope">
+          <span class="scope-badge">SCRIPTED BASELINES</span>
+          <h2>A controlled experiment</h2>
+          <p>
+            These runs evaluate deterministic reference strategies in a
+            simulated SaaS environment. They do not measure LLM performance or
+            reproduce the paper’s reported scores.
+          </p>
+          <button id="run" type="button">
+            Run scripted benchmark <span aria-hidden="true">↗</span>
+          </button>
+        </aside>
+      </section>
+      <div id="status" role="status" aria-live="polite">
+        Loading experiment results…
+      </div>
+      <section id="workspace" hidden>
+        <div class="section-toolbar">
+          <div>
+            <p class="eyebrow">EXPERIMENT RESULTS</p>
+            <h2>Reliability under repetition</h2>
+          </div>
+          <div class="filters">
+            <label>Agent strategy<select id="agent"></select></label
+            ><label
+              >Task category<select id="category">
+                <option value="all">All categories</option>
+              </select></label
+            >
+          </div>
+        </div>
+        <div class="metrics">
+          <article>
+            <span>Joint task success</span><strong id="success">—</strong
+            ><small>Correct final state + policy compliance</small>
+          </article>
+          <article>
+            <span>Final state match</span><strong id="state-match">—</strong
+            ><small>Expected records, regardless of policy</small>
+          </article>
+          <article>
+            <span>Policy compliance</span><strong id="compliance">—</strong
+            ><small>No recorded policy violations</small>
+          </article>
+          <article>
+            <span>Evaluated episodes</span><strong id="episodes">—</strong
+            ><small id="coverage">—</small>
+          </article>
+          <article>
+            <span>Consistent success</span><strong id="consistent">—</strong
+            ><small id="consistent-label">Pass^k</small>
+          </article>
+        </div>
+        <div class="results-layout">
+          <section class="panel matrix-panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Trial explorer</h3>
+                <p>
+                  One square, one attempt. Select a trial to inspect the
+                  evidence.
+                </p>
+              </div>
+              <div class="legend">
+                <span><i class="good"></i>Pass</span
+                ><span><i class="bad"></i>Fail</span>
+              </div>
+            </div>
+            <div id="matrix" class="matrix"></div>
+            <div class="panel-footer">
+              <span id="timestamp"></span><span>SIMULATED ENVIRONMENT</span>
+            </div>
+          </section>
+          <section class="panel consistency-panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Success that holds up</h3>
+                <p>Estimated pass^k across tasks</p>
+              </div>
+            </div>
+            <div id="chart" class="chart" aria-label="Pass k chart"></div>
+            <p class="definition">
+              <strong>What is pass^k?</strong> The probability that all k
+              attempts succeed, averaged across tasks. Estimated as C(s, k) /
+              C(n, k), where s is successful trials and n is total trials for a
+              task. Every selected task needs at least k trials; otherwise the
+              estimate is unavailable. Success requires both the expected final
+              state and policy compliance.
+            </p>
+          </section>
+        </div>
+        <section
+          id="detail"
+          class="panel detail-panel"
+          aria-labelledby="detail-title"
+        >
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">EPISODE EVIDENCE</p>
+              <h3 id="detail-title">Select a trial above</h3>
+              <p id="detail-subtitle">
+                Inspect the conversation, policy checks, and final records.
+              </p>
+            </div>
+            <span id="detail-badge" class="result-badge" hidden></span>
+          </div>
+          <div id="detail-body" hidden>
+            <div class="detail-columns">
+              <div>
+                <h4>Conversation & tool calls</h4>
+                <div id="trace"></div>
+              </div>
+              <div>
+                <h4>Policy checks</h4>
+                <div id="violations"></div>
+                <h4>Database changes</h4>
+                <p class="muted">
+                  Compare initial, expected, and actual final records.
+                </p>
+                <div class="state-tabs" role="group" aria-label="Database view">
+                  <button data-state="differences" class="active" type="button">
+                    Differences</button
+                  ><button data-state="initial_state" type="button">
+                    Initial</button
+                  ><button data-state="expected_state" type="button">
+                    Expected</button
+                  ><button data-state="final_state" type="button">
+                    Actual
+                  </button>
+                </div>
+                <pre id="state"></pre>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="notes">
+          <div>
+            <p class="eyebrow">READ THE RESULTS RESPONSIBLY</p>
+            <h3>Scope & limitations</h3>
+          </div>
+          <ul id="limitations"></ul>
+        </section>
+      </section>
+      <footer>
+        <span
+          >TauBenchLab
+          <span class="muted"
+            >/ A τ-bench inspired research extension</span
+          ></span
+        ><span>Inspect the behavior. Keep the evidence.</span>
+      </footer>
+    </main>
+  </body>
+</html>

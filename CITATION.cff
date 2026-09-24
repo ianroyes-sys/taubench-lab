@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this independent evaluation project, please cite it and the original tau-bench paper."
+title: "TauBench Lab: SaaS Support Agent Reliability"
+type: software
+authors:
+  - family-names: Royes
+    given-names: Ian
+version: 1.0.0
+date-released: 2026-09-24
+repository-code: "https://github.com/ianroyes-sys/taubench-lab"
+url: "https://ianroyes-sys.github.io/taubench-lab/"
+license: MIT
+abstract: "A SaaS support evaluation harness with scripted controls, outcome and policy scoring, pass^k metrics, and independent analysis of authors' archived tau-bench rewards."

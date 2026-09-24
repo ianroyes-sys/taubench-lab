@@ -1,0 +1,785 @@
+[
+  {
+    "id": "upgrade",
+    "title": "Upgrade an eligible account",
+    "category": "subscription",
+    "request": "Please change my plan to pro.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "starter",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "downgrade",
+    "title": "Downgrade within seat limit",
+    "category": "subscription",
+    "request": "Please change my plan to starter.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "starter",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "seat_limit",
+    "title": "Reject downgrade above seat limit",
+    "category": "policy",
+    "request": "Please change my plan to starter.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 8,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 8,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "unpaid",
+    "title": "Reject plan change with unpaid invoice",
+    "category": "policy",
+    "request": "Please change my plan to starter.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 50,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 50,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "cancel",
+    "title": "Cancel an active subscription",
+    "category": "subscription",
+    "request": "Please cancel my subscription.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "canceled",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "cancel_unpaid",
+    "title": "Cancel despite an unpaid balance",
+    "category": "subscription",
+    "request": "Please cancel my subscription.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 50,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "canceled",
+      "seats": 3,
+      "balance_due": 50,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "refund",
+    "title": "Refund an eligible invoice",
+    "category": "billing",
+    "request": "Please refund my latest invoice.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": true
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "late_refund",
+    "title": "Reject refund outside window",
+    "category": "policy",
+    "request": "Please refund my latest invoice.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 45,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 45,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "double_refund",
+    "title": "Prevent a duplicate refund",
+    "category": "policy",
+    "request": "Please refund my latest invoice.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": true
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": true
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "remove_member",
+    "title": "Remove a requested team member",
+    "category": "membership",
+    "request": "Please remove alex from the team.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 2,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "remove_owner",
+    "title": "Protect the workspace owner",
+    "category": "policy",
+    "request": "Please remove owner from the team.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "export",
+    "title": "Request an owner data export",
+    "category": "data",
+    "request": "Please export my workspace data.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": true
+    }
+  },
+  {
+    "id": "withdraw_export",
+    "title": "Respect withdrawn export consent",
+    "category": "consent",
+    "request": "Please export my workspace data.",
+    "user_profile": {
+      "consent": false
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "member_export",
+    "title": "Reject member data export",
+    "category": "policy",
+    "request": "Please export my workspace data.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "member",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "member",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "canceled_change",
+    "title": "Reject changes to canceled plan",
+    "category": "policy",
+    "request": "Please change my plan to starter.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "canceled",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "canceled",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": true,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  },
+  {
+    "id": "unpaid_refund",
+    "title": "Reject refund of an unpaid invoice",
+    "category": "policy",
+    "request": "Please refund my latest invoice.",
+    "user_profile": {
+      "consent": true
+    },
+    "initial_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": false,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    },
+    "expected_state": {
+      "account_id": "acme",
+      "requester_role": "owner",
+      "plan": "pro",
+      "status": "active",
+      "seats": 3,
+      "balance_due": 0,
+      "invoice": {
+        "amount": 120,
+        "age_days": 10,
+        "paid": false,
+        "refunded": false
+      },
+      "members": [
+        "owner",
+        "alex",
+        "sam"
+      ],
+      "export_requested": false
+    }
+  }
+]
